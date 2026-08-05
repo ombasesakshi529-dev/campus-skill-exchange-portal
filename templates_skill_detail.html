@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Skill detail - Campus Skill Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="site-header"></div>
+  <main class="max-w-3xl mx-auto p-6">
+    <div id="skill" class="card"></div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="/static/js/firebaseConfig.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="/static/js/layout.js"></script>
+  <script src="/static/js/auth.js"></script>
+
+  <script>
+    function getParam(name){
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    const id = getParam('id');
+    if (!id) document.getElementById('skill').innerText = 'No skill id';
+    else {
+      firebase.database().ref('skills/'+id).once('value').then(snap=>{
+        if (!snap.exists()) { document.getElementById('skill').innerText='Not found'; return; }
+        const s = snap.val();
+        document.getElementById('skill').innerHTML = `
+          <h1 class="text-2xl font-bold">${s.title}</h1>
+          <div class="text-sm text-gray-600">By ${s.ownerName || 'User'}</div>
+          <div class="mt-4">${s.description || ''}</div>
+          <div class="mt-4 space-x-2">
+            <button id="contact-seller" class="bg-indigo-600 text-white px-4 py-2 rounded">Contact</button>
+            <a href="/post_skill.html" class="border px-3 py-2 rounded">Post similar</a>
+          </div>
+        `;
+        document.getElementById('contact-seller').addEventListener('click', async ()=>{
+          // For demo: write a message entry under messages/{sellerUid}
+          const user = firebase.auth().currentUser;
+          if (!user) { alert('Please login first'); window.location='/login.html'; return; }
+          const msgRef = firebase.database().ref('messages').push();
+          await msgRef.set({
+            from: user.uid,
+            to: s.owner,
+            skillId: id,
+            body: `Hi! I'm interested in your skill: ${s.title}`,
+            createdAt: Date.now()
+          });
+          alert('Message sent');
+        });
+      });
+    }
+  </script>
+apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+  authDomain: "backend-python-database.firebaseapp.com",
+  databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
+  projectId: "backend-python-database",
+  storageBucket: "backend-python-database.firebasestorage.app",
+  messagingSenderId: "366124632220",
+  appId: "1:366124632220:web:0245bc53207ff591fd8559",
+</body>
+</html>

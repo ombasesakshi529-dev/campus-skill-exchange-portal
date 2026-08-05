@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Profile - Campus Skill Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="site-header"></div>
+  <main class="max-w-md mx-auto p-6">
+    <div class="card">
+      <h2 class="text-xl font-semibold">Edit Profile</h2>
+      <form id="edit-form" class="space-y-4 mt-4">
+        <input id="name" placeholder="Full name" class="w-full p-2 border rounded" />
+        <input id="bio" placeholder="Short bio" class="w-full p-2 border rounded" />
+        <button class="bg-indigo-600 text-white px-4 py-2 rounded">Save</button>
+      </form>
+      <div id="status" class="mt-2 text-sm"></div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="/static/js/firebaseConfig.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="/static/js/layout.js"></script>
+  <script src="/static/js/auth.js"></script>
+
+  <script>
+    onAuthStateChanged(async (ctx) => {
+      if (!ctx) { window.location.href = '/login.html'; return; }
+      const uid = ctx.user.uid;
+      const snap = await firebase.database().ref('users/'+uid).once('value');
+      const u = snap.val() || {};
+      document.getElementById('name').value = u.name || '';
+      document.getElementById('bio').value = u.bio || '';
+
+      document.getElementById('edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await firebase.database().ref('users/'+uid).update({
+          name: document.getElementById('name').value,
+          bio: document.getElementById('bio').value
+        });
+        document.getElementById('status').textContent = 'Saved';
+      });
+    });
+  </script>
+</body>
+</html>

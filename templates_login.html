@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Login - Campus Skill Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="site-header"></div>
+  <main class="max-w-md mx-auto p-6">
+    <div class="card">
+      <h2 class="text-xl font-semibold mb-4">Sign in</h2>
+      <form id="login-form" class="space-y-4">
+        <input id="email" type="email" placeholder="Email" required class="w-full p-2 border rounded" />
+        <input id="password" type="password" placeholder="Password" required class="w-full p-2 border rounded" />
+        <button class="w-full bg-indigo-600 text-white p-2 rounded">Login</button>
+      </form>
+      <div class="text-sm mt-4">No account? <a href="/register.html" class="text-indigo-600">Register</a></div>
+      <div id="login-error" class="text-red-600 mt-2"></div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="/static/js/firebaseConfig.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="/static/js/layout.js"></script>
+  <script src="/static/js/auth.js"></script>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      try {
+        await loginUser(email, password);
+        window.location.href = '/dashboard_student.html';
+      } catch (err) {
+        document.getElementById('login-error').textContent = err.message;
+      }
+    });
+  </script>
+apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+  authDomain: "backend-python-database.firebaseapp.com",
+  databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
+  projectId: "backend-python-database",
+  storageBucket: "backend-python-database.firebasestorage.app",
+  messagingSenderId: "366124632220",
+  appId: "1:366124632220:web:0245bc53207ff591fd8559",
+</body>
+</html>

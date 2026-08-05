@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Messages - Campus Skill Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="site-header"></div>
+  <main class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold">Messages</h1>
+    <div id="messages" class="mt-4"></div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="/static/js/firebaseConfig.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="/static/js/layout.js"></script>
+  <script src="/static/js/auth.js"></script>
+
+  <script>
+    onAuthStateChanged(async (ctx) => {
+      if (!ctx) { window.location.href = '/login.html'; return; }
+      const uid = ctx.user.uid;
+      const ref = firebase.database().ref('messages').orderByChild('to').equalTo(uid);
+      ref.on('value', snap => {
+        const container = document.getElementById('messages');
+        container.innerHTML = '';
+        if (!snap.exists()) { container.textContent = 'No messages'; return; }
+        Object.entries(snap.val()).reverse().forEach(([id,m])=>{
+          const div = document.createElement('div');
+          div.className = 'card mb-2';
+          div.innerHTML = `<div><strong>From:</strong> ${m.from}</div><div class="text-sm text-gray-600">${new Date(m.createdAt).toLocaleString()}</div><div class="mt-2">${m.body}</div>`;
+          container.appendChild(div);
+        });
+      });
+    });
+  </script>
+apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+  authDomain: "backend-python-database.firebaseapp.com",
+  databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
+  projectId: "backend-python-database",
+  storageBucket: "backend-python-database.firebasestorage.app",
+  messagingSenderId: "366124632220",
+  appId: "1:366124632220:web:0245bc53207ff591fd8559",
+</body>
+</html>

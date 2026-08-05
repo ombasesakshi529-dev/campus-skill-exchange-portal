@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Browse Skills - Campus Skill Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="site-header"></div>
+  <main class="max-w-6xl mx-auto p-6">
+    <h1 class="text-2xl font-bold">Browse Skills</h1>
+    <div class="mt-4">
+      <input id="search" placeholder="Search by title or tag" class="w-full p-2 border rounded" />
+    </div>
+    <div id="list" class="grid md:grid-cols-3 gap-4 mt-4"></div>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="/static/js/firebaseConfig.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="/static/js/layout.js"></script>
+  <script src="/static/js/auth.js"></script>
+
+  <script>
+    const listEl = document.getElementById('list');
+    firebase.database().ref('skills').on('value', snap => {
+      listEl.innerHTML = '';
+      if (!snap.exists()) { listEl.textContent = 'No skills yet'; return; }
+      Object.entries(snap.val()).reverse().forEach(([id,s])=>{
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<h3 class="font-semibold">${s.title}</h3>
+          <p class="text-sm text-gray-600">${s.short || ''}</p>
+          <div class="mt-2 flex justify-between"><a href="/skill_detail.html?id=${id}" class="text-indigo-600">View</a><span class="text-xs text-gray-500">${new Date(s.createdAt).toLocaleDateString()}</span></div>`;
+        listEl.appendChild(card);
+      });
+    });
+
+    document.getElementById('search').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      Array.from(listEl.children).forEach(card => {
+        const txt = card.textContent.toLowerCase();
+        card.style.display = txt.includes(q) ? '' : 'none';
+      });
+    });
+  </script>
+apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+  authDomain: "backend-python-database.firebaseapp.com",
+  databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
+  projectId: "backend-python-database",
+  storageBucket: "backend-python-database.firebasestorage.app",
+  messagingSenderId: "366124632220",
+  appId: "1:366124632220:web:0245bc53207ff591fd8559",
+</body>
+</html>

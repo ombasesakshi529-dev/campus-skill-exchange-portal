@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard - Campus Skill Exchange</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div id="site-header"></div>
+  <main class="max-w-6xl mx-auto p-6">
+    <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+
+    <section class="mt-6 grid md:grid-cols-2 gap-4">
+      <div class="card">
+        <h3 class="font-semibold">Manage Users</h3>
+        <div id="users-list" class="mt-2"></div>
+      </div>
+      <div class="card">
+        <h3 class="font-semibold">Reports</h3>
+        <div id="reports" class="mt-2 text-sm text-gray-600">No reports</div>
+      </div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+
+  <script src="/static/js/firebaseConfig.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="/static/js/layout.js"></script>
+  <script src="/static/js/auth.js"></script>
+
+  <script>
+    onAuthStateChanged(async (ctx) => {
+      if (!ctx) { window.location.href = '/login.html'; return; }
+      // require admin claim (this verifies custom claims set via backend)
+      if (!ctx.isAdminClaim) {
+        document.getElementById('users-list').innerHTML = '<div class="text-red-600">Access denied. Not an admin.</div>';
+        return;
+      }
+
+      firebase.database().ref('users').on('value', snap => {
+        const list = document.getElementById('users-list');
+        list.innerHTML = '';
+        if (!snap.exists()) {
+          list.textContent = 'No users';
+          return;
+        }
+        Object.entries(snap.val()).forEach(([uid, u]) => {
+          const div = document.createElement('div');
+          div.className = 'flex justify-between border-b py-2';
+          div.innerHTML = `<div><strong>${u.name || u.email}</strong><div class="text-xs text-gray-600">${u.email}</div></div>
+            <div><button data-uid="${uid}" class="btn-set-admin text-sm bg-indigo-600 text-white px-2 py-1 rounded">Make Admin</button></div>`;
+          list.appendChild(div);
+        });
+
+        document.querySelectorAll('.btn-set-admin').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const targetUid = e.currentTarget.dataset.uid;
+            // Call backend endpoint to set claim (you must implement proper auth)
+            const token = await ctx.user.getIdToken();
+            const res = await fetch('/api/set_role', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify({ uid: targetUid, role: 'admin' })
+            });
+            const json = await res.json();
+            if (json.ok) alert('Role updated. The user will need to re-login.');
+            else alert('Error: ' + (json.error || JSON.stringify(json)));
+          });
+        });
+      });
+    });
+  </script>
+apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+  authDomain: "backend-python-database.firebaseapp.com",
+  databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
+  projectId: "backend-python-database",
+  storageBucket: "backend-python-database.firebasestorage.app",
+  messagingSenderId: "366124632220",
+  appId: "1:366124632220:web:0245bc53207ff591fd8559",
+</body>
+</html>
