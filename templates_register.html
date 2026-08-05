@@ -41,15 +41,22 @@
         window.location.href = '/dashboard_student.html';
       } catch (err) {
         document.getElementById('register-error').textContent = err.message;
-      }
-    });
-  </script>
-apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+        const firebaseConfig = {
+  apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
   authDomain: "backend-python-database.firebaseapp.com",
   databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
   projectId: "backend-python-database",
   storageBucket: "backend-python-database.firebasestorage.app",
   messagingSenderId: "366124632220",
   appId: "1:366124632220:web:0245bc53207ff591fd8559",
+  measurementId: "G-Y92Y8LF7QK"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+      }
+    });
+  </script>
 </body>
 </html>
