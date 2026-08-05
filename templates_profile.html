@@ -35,16 +35,24 @@
         <div><strong>${u.name || ctx.user.email}</strong></div>
         <div class="text-sm text-gray-600">${u.email || ctx.user.email}</div>
         <div class="mt-2">Role: <strong>${u.role || 'user'}</strong></div>
-        <div class="mt-3 text-sm text-gray-500">Member since: ${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</div>
-      `;
-    });
-  </script>
-apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
+        <div class="mt-3 text-sm text-gray-500">Member since: ${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</div>;
+        const firebaseConfig = {
+  apiKey: "AIzaSyB6z6HRLZm8UWQuQPDlEDIK2O5LDUYG0l4",
   authDomain: "backend-python-database.firebaseapp.com",
   databaseURL: "https://backend-python-database-default-rtdb.firebaseio.com",
   projectId: "backend-python-database",
   storageBucket: "backend-python-database.firebasestorage.app",
   messagingSenderId: "366124632220",
   appId: "1:366124632220:web:0245bc53207ff591fd8559",
+  measurementId: "G-Y92Y8LF7QK"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+      
+    });
+  </script>
+
 </body>
 </html>
